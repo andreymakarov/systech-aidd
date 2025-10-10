@@ -13,14 +13,9 @@ class LLMClient:
             base_url=config.openrouter_base_url
         )
 
-    async def generate_response(self, user_message: str) -> str:
-        """Генерация ответа от LLM на сообщение пользователя"""
+    async def generate_response(self, messages: list[dict]) -> str:
+        """Генерация ответа от LLM с учетом истории диалога"""
         try:
-            messages = [
-                {"role": "system", "content": self.config.system_prompt},
-                {"role": "user", "content": user_message}
-            ]
-
             response = await self.client.chat.completions.create(
                 model=self.config.openrouter_model,
                 messages=messages

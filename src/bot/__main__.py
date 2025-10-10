@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from src.bot.config import Config
+from src.bot.conversation import ConversationManager
 from src.bot.llm_client import LLMClient
 from src.bot.handlers import MessageHandler
 from src.bot.bot import TelegramBot
@@ -21,8 +22,9 @@ async def main():
     try:
         # Инициализация компонентов
         config = Config()
+        conversation_manager = ConversationManager()
         llm_client = LLMClient(config)
-        message_handler = MessageHandler(llm_client)
+        message_handler = MessageHandler(llm_client, conversation_manager)
         bot = TelegramBot(config, message_handler)
 
         # Запуск бота

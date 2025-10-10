@@ -2,13 +2,15 @@ import logging
 from aiogram.types import Message
 from aiogram.enums import ChatAction
 from src.bot.llm_client import LLMClient
+from src.bot.conversation import ConversationManager
 
 
 class MessageHandler:
     """Обработчик сообщений от пользователей"""
 
-    def __init__(self, llm_client: LLMClient = None):
+    def __init__(self, llm_client: LLMClient = None, conversation_manager: ConversationManager = None):
         self.llm_client = llm_client
+        self.conversation_manager = conversation_manager
 
     async def handle_start_command(self, message: Message):
         """Обработчик команды /start"""
@@ -37,8 +39,22 @@ class MessageHandler:
                 action=ChatAction.TYPING
             )
 
+            # Получаем историю диалога
+            history = self.conversation_manager.get_history(user_id)
+
+            # Формируем запрос: system prompt + история + новое сообщение
+            messages = [
+                {"role": "system", "content": self.llm_client.config.system_prompt},
+                *history,
+                {"role": "user", "content": text}
+            ]
+
             # Получаем ответ от LLM
-            response = await self.llm_client.generate_response(text)
+            response = await self.llm_client.generate_response(messages)
+
+            # Сохраняем сообщение пользователя и ответ в историю
+            self.conversation_manager.add_message(user_id, "user", text)
+            self.conversation_manager.add_message(user_id, "assistant", response)
 
             # Отправляем ответ пользователю
             await message.answer(response)
