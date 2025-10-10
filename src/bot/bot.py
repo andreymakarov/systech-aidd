@@ -21,9 +21,16 @@ class TelegramBot:
 
     def _register_handlers(self):
         """Регистрация обработчиков сообщений"""
+        # Команда /start
         self.dp.message.register(
             self.message_handler.handle_start_command,
             lambda message: message.text == "/start"
+        )
+
+        # Текстовые сообщения (не команды)
+        self.dp.message.register(
+            self.message_handler.handle_text_message,
+            lambda message: message.text and not message.text.startswith("/")
         )
 
     async def start(self):
