@@ -56,9 +56,11 @@
 - **Type hints** - обязательны для всех функций и методов
 - **MyPy strict mode** - строгая проверка типов
 - **Автоматизация** - make qa проверяет код перед коммитом
-- **Тестирование** - unit и integration тесты с покрытием >70%
-  - Unit тесты: `Config`, `ConversationManager` (>80% coverage)
-  - Integration тесты: `LLMClient`, `MessageHandler` (с мокированием)
+- **Тестирование** - unit и integration тесты с покрытием 98%
+  - Unit тесты: `Config`, `ConversationManager` (100% coverage)
+  - Integration тесты: `LLMClient` (100%), `MessageHandler` (96%)
+  - Мокирование через `unittest.mock` (AsyncMock для async функций)
+  - 20 тестов покрывают всю бизнес-логику
   - Изоляция тестов через fixtures и monkeypatch
 
 ### Что НЕ делаем

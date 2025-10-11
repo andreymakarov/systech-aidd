@@ -90,10 +90,21 @@ alwaysApply: false
 - Использовать `pytest.MonkeyPatch` для работы с переменными окружения
 - Фикстура `clean_env` (autouse=True) очищает окружение перед каждым тестом
 - Использовать fixtures для переиспользуемых моков и данных
+- `mock_config` - тестовая конфигурация
+- `mock_llm_client` - мок LLM клиента с AsyncMock
+- `mock_conversation_manager` - мок менеджера диалогов
+
+### Мокирование
+- Использовать `unittest.mock` (MagicMock, AsyncMock) для моков
+- Мокировать внешние зависимости (HTTP, Telegram API)
+- Async функции мокировать через `AsyncMock`
+- Проверять вызовы моков через `assert_called_once_with()`
 
 ### Coverage
-- Цель: >70% для всего проекта
-- Unit тесты для `Config` и `ConversationManager`: >80%
+- Цель: >70% для всего проекта (достигнуто 98%)
+- Unit тесты для `Config` и `ConversationManager`: 100%
+- Integration тесты для `LLMClient` и `MessageHandler`: 96-100%
+- Исключены из coverage: `__main__.py`, `bot.py` (entry points)
 - Запуск: `make test` автоматически генерирует HTML отчет в `htmlcov/`
 
 ### Что НЕ делаем

@@ -7,7 +7,7 @@
 | 1 | Настройка автоматизации качества кода | ✅ Завершено | 2025-10-11 |
 | 2 | Рефакторинг: SOLID и DRY | ✅ Завершено | 2025-10-11 |
 | 3 | Базовое тестирование (unit tests) | ✅ Завершено | 2025-10-11 |
-| 4 | Интеграционное тестирование | ⏳ Ожидает | - |
+| 4 | Интеграционное тестирование | ✅ Завершено | 2025-10-11 |
 
 **Легенда:**
 - ⏳ Ожидает
@@ -94,19 +94,22 @@
 **Цель:** Протестировать взаимодействие компонентов с моками
 
 **Задачи:**
-- [ ] **test_llm_client.py:** тесты с мокированием HTTP
-  - [ ] `test_generate_response_success` - успешный ответ
-  - [ ] `test_generate_response_api_error` - ошибка API
-  - [ ] Использовать `pytest-asyncio` для async тестов
-- [ ] **test_handlers.py:** тесты с мокированием зависимостей
-  - [ ] `test_handle_start_command` - проверка welcome text
-  - [ ] `test_handle_text_message` - обработка текста с моками
-  - [ ] `test_handle_clear_command` - вызов clear_history
-  - [ ] `test_handle_non_text_message` - отклонение нетекстовых
-  - [ ] Мокировать `Message`, `LLMClient`, `ConversationManager`
-- [ ] Настроить fixtures в `conftest.py` для переиспользования моков
-- [ ] Достичь общего покрытия >70% для всего проекта
-- [ ] Обновить файлы правил `*.mdc` и `vision.md` на соответствие сделанным изменениям
+- [x] **test_llm_client.py:** тесты с мокированием HTTP
+  - [x] `test_generate_response_success` - успешный ответ
+  - [x] `test_generate_response_api_error` - ошибка API
+  - [x] `test_generate_response_empty_content` - пустой ответ от LLM
+  - [x] Использовать `pytest-asyncio` для async тестов
+- [x] **test_handlers.py:** тесты с мокированием зависимостей
+  - [x] `test_handle_start_command` - проверка welcome text
+  - [x] `test_handle_text_message` - обработка текста с моками
+  - [x] `test_handle_text_message_with_history` - обработка с историей
+  - [x] `test_handle_text_message_llm_error` - обработка ошибки LLM
+  - [x] `test_handle_clear_command` - вызов clear_history
+  - [x] `test_handle_non_text_message` - отклонение нетекстовых
+  - [x] Мокировать `Message`, `LLMClient`, `ConversationManager`
+- [x] Настроить fixtures в `conftest.py` для переиспользования моков
+- [x] Достичь общего покрытия >70% для всего проекта (достигнуто 98%)
+- [x] Обновить файлы правил `*.mdc` и `vision.md` на соответствие сделанным изменениям
 
 **Тест:** `make test` проходит полностью. Общий coverage >70%.
 

@@ -83,7 +83,12 @@ addopts = [
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["*/tests/*", "*/__pycache__/*"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "src/bot/__main__.py",  # Entry point - не требует тестирования
+    "src/bot/bot.py",       # Инициализация aiogram - сложно тестировать
+]
 
 [tool.coverage.report]
 exclude_lines = [
