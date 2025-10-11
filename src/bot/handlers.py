@@ -6,14 +6,25 @@ from aiogram.types import Message
 from bot.conversation import ConversationManager
 from bot.llm_client import LLMClient
 
+# Константы сообщений
+WELCOME_TEXT = """Привет! Я AI-ассистент. Задай мне любой вопрос!
+
+Доступные команды:
+/start - приветствие
+/clear - очистить историю диалога"""
+
+ERROR_MESSAGE = "Произошла ошибка при обработке запроса. Попробуйте позже."
+NON_TEXT_MESSAGE = "Я работаю только с текстовыми сообщениями"
+HISTORY_CLEARED_MESSAGE = "История диалога очищена"
+
 
 class MessageHandler:
     """Обработчик сообщений от пользователей"""
 
     def __init__(
         self,
-        llm_client: LLMClient | None = None,
-        conversation_manager: ConversationManager | None = None,
+        llm_client: LLMClient,
+        conversation_manager: ConversationManager,
     ) -> None:
         self.llm_client = llm_client
         self.conversation_manager = conversation_manager
@@ -22,15 +33,7 @@ class MessageHandler:
         """Обработчик команды /start"""
         user_id = message.from_user.id  # type: ignore[union-attr]
         logging.info(f"User {user_id} executed /start command")
-
-        welcome_text = (
-            "Привет! Я AI-ассистент. Задай мне любой вопрос!\n\n"
-            "Доступные команды:\n"
-            "/start - приветствие\n"
-            "/clear - очистить историю диалога"
-        )
-
-        await message.answer(welcome_text)
+        await message.answer(WELCOME_TEXT)
 
     async def handle_text_message(self, message: Message) -> None:
         """Обработчик текстовых сообщений"""
@@ -49,11 +52,9 @@ class MessageHandler:
                 )
 
             # Получаем историю диалога
-            assert self.conversation_manager is not None
             history = self.conversation_manager.get_history(user_id)
 
             # Формируем запрос: system prompt + история + новое сообщение
-            assert self.llm_client is not None
             messages = [
                 {"role": "system", "content": self.llm_client.config.system_prompt},
                 *history,
@@ -73,7 +74,7 @@ class MessageHandler:
 
         except Exception as e:
             logging.error(f"Error processing message from user {user_id}: {e}")
-            await message.answer("Произошла ошибка при обработке запроса. Попробуйте позже.")
+            await message.answer(ERROR_MESSAGE)
 
     async def handle_clear_command(self, message: Message) -> None:
         """Обработчик команды /clear"""
@@ -81,14 +82,13 @@ class MessageHandler:
         logging.info(f"User {user_id} executed /clear command")
 
         # Очищаем историю диалога
-        assert self.conversation_manager is not None
         self.conversation_manager.clear_history(user_id)
 
-        await message.answer("История диалога очищена")
+        await message.answer(HISTORY_CLEARED_MESSAGE)
 
     async def handle_non_text_message(self, message: Message) -> None:
         """Обработчик нетекстовых сообщений"""
         user_id = message.from_user.id  # type: ignore[union-attr]
         logging.info(f"User {user_id} sent non-text message")
 
-        await message.answer("Я работаю только с текстовыми сообщениями")
+        await message.answer(NON_TEXT_MESSAGE)

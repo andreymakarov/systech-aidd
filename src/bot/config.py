@@ -1,14 +1,10 @@
 import os
 
-from dotenv import load_dotenv
-
 
 class Config:
     """Конфигурация приложения из переменных окружения"""
 
     def __init__(self) -> None:
-        load_dotenv()
-
         # Обязательные параметры
         self.telegram_bot_token = self._get_required("TELEGRAM_BOT_TOKEN")
         self.openrouter_api_key = self._get_required("OPENROUTER_API_KEY")

@@ -1,6 +1,8 @@
 import asyncio
 import logging
 
+from dotenv import load_dotenv
+
 from bot.bot import TelegramBot
 from bot.config import Config
 from bot.conversation import ConversationManager
@@ -17,6 +19,7 @@ def setup_logging() -> None:
 
 async def main() -> None:
     """Главная функция приложения"""
+    load_dotenv()
     setup_logging()
 
     try:

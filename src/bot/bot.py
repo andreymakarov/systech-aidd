@@ -3,9 +3,31 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.types import Message
 
 from bot.config import Config
 from bot.handlers import MessageHandler
+
+
+# Фильтры для сообщений
+def is_start_command(message: Message) -> bool:
+    """Проверка команды /start"""
+    return message.text == "/start"
+
+
+def is_clear_command(message: Message) -> bool:
+    """Проверка команды /clear"""
+    return message.text == "/clear"
+
+
+def is_regular_text(message: Message) -> bool:
+    """Проверка обычного текстового сообщения (не команда)"""
+    return bool(message.text and not message.text.startswith("/"))
+
+
+def is_non_text(message: Message) -> bool:
+    """Проверка нетекстового сообщения"""
+    return not message.text
 
 
 class TelegramBot:
@@ -24,28 +46,16 @@ class TelegramBot:
     def _register_handlers(self) -> None:
         """Регистрация обработчиков сообщений"""
         # Команда /start
-        self.dp.message.register(
-            self.message_handler.handle_start_command,
-            lambda message: message.text == "/start",
-        )
+        self.dp.message.register(self.message_handler.handle_start_command, is_start_command)
 
         # Команда /clear
-        self.dp.message.register(
-            self.message_handler.handle_clear_command,
-            lambda message: message.text == "/clear",
-        )
+        self.dp.message.register(self.message_handler.handle_clear_command, is_clear_command)
 
         # Текстовые сообщения (не команды)
-        self.dp.message.register(
-            self.message_handler.handle_text_message,
-            lambda message: message.text and not message.text.startswith("/"),
-        )
+        self.dp.message.register(self.message_handler.handle_text_message, is_regular_text)
 
         # Нетекстовые сообщения (фото, файлы, стикеры и т.д.)
-        self.dp.message.register(
-            self.message_handler.handle_non_text_message,
-            lambda message: not message.text,
-        )
+        self.dp.message.register(self.message_handler.handle_non_text_message, is_non_text)
 
     async def start(self) -> None:
         """Запуск бота"""
