@@ -1,21 +1,21 @@
 import asyncio
 import logging
-from src.bot.config import Config
-from src.bot.conversation import ConversationManager
-from src.bot.llm_client import LLMClient
-from src.bot.handlers import MessageHandler
-from src.bot.bot import TelegramBot
+
+from bot.bot import TelegramBot
+from bot.config import Config
+from bot.conversation import ConversationManager
+from bot.handlers import MessageHandler
+from bot.llm_client import LLMClient
 
 
-def setup_logging():
+def setup_logging() -> None:
     """Настройка базового логирования"""
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
 
-async def main():
+async def main() -> None:
     """Главная функция приложения"""
     setup_logging()
 
@@ -43,4 +43,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
