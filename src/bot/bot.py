@@ -27,10 +27,22 @@ class TelegramBot:
             lambda message: message.text == "/start"
         )
 
+        # Команда /clear
+        self.dp.message.register(
+            self.message_handler.handle_clear_command,
+            lambda message: message.text == "/clear"
+        )
+
         # Текстовые сообщения (не команды)
         self.dp.message.register(
             self.message_handler.handle_text_message,
             lambda message: message.text and not message.text.startswith("/")
+        )
+
+        # Нетекстовые сообщения (фото, файлы, стикеры и т.д.)
+        self.dp.message.register(
+            self.message_handler.handle_non_text_message,
+            lambda message: not message.text
         )
 
     async def start(self):

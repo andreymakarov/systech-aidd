@@ -66,3 +66,20 @@ class MessageHandler:
                 "Произошла ошибка при обработке запроса. Попробуйте позже."
             )
 
+    async def handle_clear_command(self, message: Message):
+        """Обработчик команды /clear"""
+        user_id = message.from_user.id
+        logging.info(f"User {user_id} executed /clear command")
+
+        # Очищаем историю диалога
+        self.conversation_manager.clear_history(user_id)
+
+        await message.answer("История диалога очищена")
+
+    async def handle_non_text_message(self, message: Message):
+        """Обработчик нетекстовых сообщений"""
+        user_id = message.from_user.id
+        logging.info(f"User {user_id} sent non-text message")
+
+        await message.answer("Я работаю только с текстовыми сообщениями")
+

@@ -20,3 +20,8 @@ class ConversationManager:
             "content": content
         })
 
+    def clear_history(self, user_id: int):
+        """Очистить историю диалога пользователя"""
+        if user_id in self.conversations:
+            self.conversations[user_id] = []
+
