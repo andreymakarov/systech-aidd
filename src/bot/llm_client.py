@@ -16,6 +16,8 @@ class LLMClient:
     async def generate_response(self, messages: list[dict]) -> str:
         """Генерация ответа от LLM с учетом истории диалога"""
         try:
+            logging.info(f"Sending request to LLM (model: {self.config.openrouter_model})")
+
             response = await self.client.chat.completions.create(
                 model=self.config.openrouter_model,
                 messages=messages
@@ -26,6 +28,6 @@ class LLMClient:
             return answer
 
         except Exception as e:
-            logging.error(f"Error calling LLM API: {e}")
+            logging.error(f"Error calling LLM API: {type(e).__name__}: {e}")
             raise
 

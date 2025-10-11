@@ -21,6 +21,7 @@ async def main():
 
     try:
         # Инициализация компонентов
+        logging.info("Инициализация компонентов...")
         config = Config()
         conversation_manager = ConversationManager()
         llm_client = LLMClient(config)
@@ -28,18 +29,18 @@ async def main():
         bot = TelegramBot(config, message_handler)
 
         # Запуск бота
+        logging.info("Запуск бота...")
         await bot.start()
     except ValueError as e:
         logging.error(f"Configuration error: {e}")
         return
+    except KeyboardInterrupt:
+        logging.info("Получен сигнал остановки (Ctrl+C)")
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        logging.error(f"Unexpected error: {e}", exc_info=True)
         raise
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logging.info("Получен сигнал остановки")
+    asyncio.run(main())
 

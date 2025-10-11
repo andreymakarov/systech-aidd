@@ -48,10 +48,14 @@ class TelegramBot:
     async def start(self):
         """Запуск бота"""
         logging.info("Бот запущен")
-        await self.dp.start_polling(self.bot)
+        try:
+            await self.dp.start_polling(self.bot)
+        finally:
+            await self.stop()
 
     async def stop(self):
         """Остановка бота"""
-        logging.info("Бот остановлен")
+        logging.info("Останавливаем бота...")
         await self.bot.session.close()
+        logging.info("Бот остановлен")
 
