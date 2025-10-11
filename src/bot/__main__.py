@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 
 from dotenv import load_dotenv
@@ -37,12 +38,12 @@ async def main() -> None:
     except ValueError as e:
         logging.error(f"Configuration error: {e}")
         return
-    except KeyboardInterrupt:
-        logging.info("Получен сигнал остановки (Ctrl+C)")
     except Exception as e:
         logging.error(f"Unexpected error: {e}", exc_info=True)
         raise
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Тихий выход при Ctrl+C - основная обработка уже в bot.stop()
+    with contextlib.suppress(KeyboardInterrupt):
+        asyncio.run(main())
