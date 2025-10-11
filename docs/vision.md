@@ -57,6 +57,9 @@
 - **MyPy strict mode** - строгая проверка типов
 - **Автоматизация** - make qa проверяет код перед коммитом
 - **Тестирование** - unit и integration тесты с покрытием >70%
+  - Unit тесты: `Config`, `ConversationManager` (>80% coverage)
+  - Integration тесты: `LLMClient`, `MessageHandler` (с мокированием)
+  - Изоляция тестов через fixtures и monkeypatch
 
 ### Что НЕ делаем
 - ❌ База данных (история только в памяти)
@@ -79,15 +82,22 @@ systech-aidd/
 ├── docs/
 │   ├── idea.md
 │   └── vision.md
-└── src/
-    └── bot/
-        ├── __init__.py
-        ├── __main__.py         # Точка входа (python -m bot)
-        ├── config.py           # Класс Config - загрузка настроек
-        ├── bot.py              # Класс TelegramBot - основной бот
-        ├── llm_client.py       # Класс LLMClient - работа с OpenRouter
-        ├── conversation.py     # Класс ConversationManager - управление историей
-        └── handlers.py         # Класс MessageHandler - обработчики сообщений
+├── src/
+│   └── bot/
+│       ├── __init__.py
+│       ├── __main__.py         # Точка входа (python -m bot)
+│       ├── config.py           # Класс Config - загрузка настроек
+│       ├── bot.py              # Класс TelegramBot - основной бот
+│       ├── llm_client.py       # Класс LLMClient - работа с OpenRouter
+│       ├── conversation.py     # Класс ConversationManager - управление историей
+│       └── handlers.py         # Класс MessageHandler - обработчики сообщений
+└── tests/
+    ├── __init__.py
+    ├── conftest.py             # Фикстуры для тестов
+    ├── test_config.py          # Unit тесты для Config
+    ├── test_conversation.py    # Unit тесты для ConversationManager
+    ├── test_llm_client.py      # Integration тесты для LLMClient
+    └── test_handlers.py        # Integration тесты для MessageHandler
 ```
 
 ### Назначение модулей (1 класс = 1 файл)

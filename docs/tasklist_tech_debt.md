@@ -6,7 +6,7 @@
 |----------|-----------|--------|------|
 | 1 | Настройка автоматизации качества кода | ✅ Завершено | 2025-10-11 |
 | 2 | Рефакторинг: SOLID и DRY | ✅ Завершено | 2025-10-11 |
-| 3 | Базовое тестирование (unit tests) | ⏳ Ожидает | - |
+| 3 | Базовое тестирование (unit tests) | ✅ Завершено | 2025-10-11 |
 | 4 | Интеграционное тестирование | ⏳ Ожидает | - |
 
 **Легенда:**
@@ -66,20 +66,20 @@
 **Цель:** Покрыть тестами чистую бизнес-логику
 
 **Задачи:**
-- [ ] Создать структуру `tests/` с `conftest.py`
-- [ ] **test_conversation.py:** тесты для `ConversationManager`
-  - [ ] `test_get_history_empty` - пустая история для нового пользователя
-  - [ ] `test_add_message` - добавление сообщения
-  - [ ] `test_add_multiple_messages` - несколько сообщений
-  - [ ] `test_clear_history` - очистка истории
-  - [ ] `test_multiple_users` - изоляция пользователей
-- [ ] **test_config.py:** тесты для `Config`
-  - [ ] `test_config_with_required_env` - успешная загрузка
-  - [ ] `test_config_missing_required_env` - падение при отсутствии обязательных
-  - [ ] `test_config_default_values` - значения по умолчанию
-- [ ] Настроить `pytest.ini_options` в `pyproject.toml`
-- [ ] Достичь покрытия >80% для `conversation.py` и `config.py`
-- [ ] Обновить файлы правил `*.mdc` и `vision.md` на соответствие сделанным изменениям
+- [x] Создать структуру `tests/` с `conftest.py`
+- [x] **test_conversation.py:** тесты для `ConversationManager`
+  - [x] `test_get_history_empty` - пустая история для нового пользователя
+  - [x] `test_add_message` - добавление сообщения
+  - [x] `test_add_multiple_messages` - несколько сообщений
+  - [x] `test_clear_history` - очистка истории
+  - [x] `test_multiple_users` - изоляция пользователей
+- [x] **test_config.py:** тесты для `Config`
+  - [x] `test_config_with_required_env` - успешная загрузка
+  - [x] `test_config_missing_required_env` - падение при отсутствии обязательных
+  - [x] `test_config_default_values` - значения по умолчанию
+- [x] Настроить `pytest.ini_options` в `pyproject.toml`
+- [x] Достичь покрытия >80% для `conversation.py` и `config.py`
+- [x] Обновить файлы правил `*.mdc` и `vision.md` на соответствие сделанным изменениям
 
 **Тест:** `make test` проходит успешно. Coverage >80% для протестированных модулей.
 
