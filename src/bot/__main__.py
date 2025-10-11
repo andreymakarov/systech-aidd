@@ -1,22 +1,26 @@
 import asyncio
+import contextlib
 import logging
-from src.bot.config import Config
-from src.bot.conversation import ConversationManager
-from src.bot.llm_client import LLMClient
-from src.bot.handlers import MessageHandler
-from src.bot.bot import TelegramBot
+
+from dotenv import load_dotenv
+
+from bot.bot import TelegramBot
+from bot.config import Config
+from bot.conversation import ConversationManager
+from bot.handlers import MessageHandler
+from bot.llm_client import LLMClient
 
 
-def setup_logging():
+def setup_logging() -> None:
     """Настройка базового логирования"""
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
 
-async def main():
+async def main() -> None:
     """Главная функция приложения"""
+    load_dotenv()
     setup_logging()
 
     try:
@@ -34,13 +38,12 @@ async def main():
     except ValueError as e:
         logging.error(f"Configuration error: {e}")
         return
-    except KeyboardInterrupt:
-        logging.info("Получен сигнал остановки (Ctrl+C)")
     except Exception as e:
         logging.error(f"Unexpected error: {e}", exc_info=True)
         raise
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
-
+    # Тихий выход при Ctrl+C - основная обработка уже в bot.stop()
+    with contextlib.suppress(KeyboardInterrupt):
+        asyncio.run(main())

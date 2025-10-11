@@ -25,6 +25,13 @@
 - **python-dotenv** - для загрузки переменных окружения из .env файла
 - **logging** (стандартный модуль) - для логирования
 
+### Code Quality Tools
+- **Ruff** - современный линтер и форматтер для Python (замена Flake8, Black, isort)
+- **MyPy** - статическая проверка типов в strict mode
+- **Pytest** - фреймворк для unit и integration тестирования
+- **Pytest-asyncio** - поддержка асинхронных тестов
+- **Pytest-cov** - измерение покрытия кода тестами
+
 ---
 
 ## 2. Принципы разработки
@@ -45,12 +52,22 @@
 - **Минимум зависимостей** - только необходимое
 - **Асинхронность** - используем async/await для работы с IO
 
-### Что НЕ делаем на этапе MVP
+### Качество кода
+- **Type hints** - обязательны для всех функций и методов
+- **MyPy strict mode** - строгая проверка типов
+- **Автоматизация** - make qa проверяет код перед коммитом
+- **Тестирование** - unit и integration тесты с покрытием 98%
+  - Unit тесты: `Config`, `ConversationManager` (100% coverage)
+  - Integration тесты: `LLMClient` (100%), `MessageHandler` (96%)
+  - Мокирование через `unittest.mock` (AsyncMock для async функций)
+  - 20 тестов покрывают всю бизнес-логику
+  - Изоляция тестов через fixtures и monkeypatch
+
+### Что НЕ делаем
 - ❌ База данных (история только в памяти)
 - ❌ Middleware цепочки (только если критически необходимо)
 - ❌ Сложная обработка ошибок (базовая обработка и логирование)
 - ❌ Метрики и мониторинг
-- ❌ Тесты
 
 ---
 
@@ -67,15 +84,22 @@ systech-aidd/
 ├── docs/
 │   ├── idea.md
 │   └── vision.md
-└── src/
-    └── bot/
-        ├── __init__.py
-        ├── __main__.py         # Точка входа (python -m bot)
-        ├── config.py           # Класс Config - загрузка настроек
-        ├── bot.py              # Класс TelegramBot - основной бот
-        ├── llm_client.py       # Класс LLMClient - работа с OpenRouter
-        ├── conversation.py     # Класс ConversationManager - управление историей
-        └── handlers.py         # Класс MessageHandler - обработчики сообщений
+├── src/
+│   └── bot/
+│       ├── __init__.py
+│       ├── __main__.py         # Точка входа (python -m bot)
+│       ├── config.py           # Класс Config - загрузка настроек
+│       ├── bot.py              # Класс TelegramBot - основной бот
+│       ├── llm_client.py       # Класс LLMClient - работа с OpenRouter
+│       ├── conversation.py     # Класс ConversationManager - управление историей
+│       └── handlers.py         # Класс MessageHandler - обработчики сообщений
+└── tests/
+    ├── __init__.py
+    ├── conftest.py             # Фикстуры для тестов
+    ├── test_config.py          # Unit тесты для Config
+    ├── test_conversation.py    # Unit тесты для ConversationManager
+    ├── test_llm_client.py      # Integration тесты для LLMClient
+    └── test_handlers.py        # Integration тесты для MessageHandler
 ```
 
 ### Назначение модулей (1 класс = 1 файл)
@@ -89,9 +113,13 @@ systech-aidd/
 
 ### Makefile команды
 
-- `make install` - установка зависимостей через uv
+- `make install` - установка зависимостей через uv (включая dev-зависимости)
 - `make run` - запуск бота
-- `make clean` - очистка временных файлов
+- `make clean` - очистка временных файлов и кэшей
+- `make format` - автоформатирование кода (ruff format + ruff check --fix)
+- `make lint` - проверка линтером и типами (ruff check + mypy)
+- `make test` - запуск тестов (pytest)
+- `make qa` - полная проверка качества (format + lint + test)
 
 ---
 

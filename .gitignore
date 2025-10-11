@@ -15,7 +15,6 @@ env/
 .env
 
 # IDEs
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -32,3 +31,10 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Testing and QA Tools
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
