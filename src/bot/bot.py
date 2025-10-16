@@ -20,6 +20,11 @@ def is_clear_command(message: Message) -> bool:
     return message.text == "/clear"
 
 
+def is_role_command(message: Message) -> bool:
+    """Проверка команды /role"""
+    return message.text == "/role"
+
+
 def is_regular_text(message: Message) -> bool:
     """Проверка обычного текстового сообщения (не команда)"""
     return bool(message.text and not message.text.startswith("/"))
@@ -47,6 +52,9 @@ class TelegramBot:
         """Регистрация обработчиков сообщений"""
         # Команда /start
         self.dp.message.register(self.message_handler.handle_start_command, is_start_command)
+
+        # Команда /role
+        self.dp.message.register(self.message_handler.handle_role_command, is_role_command)
 
         # Команда /clear
         self.dp.message.register(self.message_handler.handle_clear_command, is_clear_command)

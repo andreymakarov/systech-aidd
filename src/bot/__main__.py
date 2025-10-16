@@ -9,6 +9,7 @@ from bot.config import Config
 from bot.conversation import ConversationManager
 from bot.handlers import MessageHandler
 from bot.llm_client import LLMClient
+from bot.role_manager import RoleManager
 
 
 def setup_logging() -> None:
@@ -29,7 +30,8 @@ async def main() -> None:
         config = Config()
         conversation_manager = ConversationManager()
         llm_client = LLMClient(config)
-        message_handler = MessageHandler(llm_client, conversation_manager)
+        role_manager = RoleManager(config.role_prompt_file)
+        message_handler = MessageHandler(llm_client, conversation_manager, role_manager)
         bot = TelegramBot(config, message_handler)
 
         # Запуск бота

@@ -20,6 +20,7 @@ def clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "OPENROUTER_BASE_URL",
         "OPENROUTER_MODEL",
         "SYSTEM_PROMPT",
+        "ROLE_PROMPT_FILE",
     ]
     for var in env_vars:
         monkeypatch.delenv(var, raising=False)
@@ -51,3 +52,13 @@ def mock_llm_client(mock_config: Config) -> Any:
     client.generate_response = AsyncMock(return_value="Test LLM response")
     return client
 
+
+@pytest.fixture
+def mock_role_manager() -> Any:
+    """Фикстура для мока RoleManager"""
+    from bot.role_manager import RoleManager
+
+    manager = MagicMock(spec=RoleManager)
+    manager.load_role.return_value = "Ты - тестовый ассистент."
+    manager.get_role_description.return_value = "🎭 **Моя роль:**\n\nТы - тестовый ассистент."
+    return manager
