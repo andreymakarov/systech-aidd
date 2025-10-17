@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Query
+import os
 
 from api.collectors.mock import MockStatCollector
+from api.collectors.real import RealStatCollector
 from api.models import DashboardStatsModel, Period
 
 
 router = APIRouter(prefix="/api", tags=["stats"])
 
-
-collector = MockStatCollector()
+backend = os.getenv("STATS_COLLECTOR", "mock").lower()
+collector = RealStatCollector() if backend == "real" else MockStatCollector()
 
 
 @router.get("/stats", response_model=DashboardStatsModel)

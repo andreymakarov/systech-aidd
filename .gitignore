@@ -38,3 +38,8 @@ build/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+
+# Node.js
+node_modules/
+.next/
+.pnpm-store/

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from api.collectors.mock import MockStatCollector
+from backend.app.collectors.mock import MockStatCollector
 
 
 @pytest.mark.parametrize("period,expected_points", [("day", 24), ("week", 7), ("month", 30)])

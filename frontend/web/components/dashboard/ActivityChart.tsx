@@ -50,3 +50,4 @@ export function ActivityChart({ data, className }: ActivityChartProps) {
 }
 
 
+

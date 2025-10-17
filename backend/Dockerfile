@@ -10,17 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY pyproject.toml README.md ./
 RUN pip install --no-cache-dir .[dev]
 
-COPY src ./src
-COPY migrations ./migrations
-COPY alembic.ini ./alembic.ini
-COPY prompts ./prompts
+COPY backend ./backend
 
-RUN mkdir -p /app/data
-ENV DB_PATH=/app/data/bot.db \
-    DATABASE_URL=sqlite+aiosqlite:////app/data/bot.db
+RUN mkdir -p /app/backend/data
+ENV DATABASE_URL=sqlite+aiosqlite:////app/backend/data/bot.db
 
-CMD sh -c "alembic upgrade head && python -m bot"
-
-
+CMD ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && uvicorn backend.app.main:app --host 0.0.0.0 --port 8000"]
 
 

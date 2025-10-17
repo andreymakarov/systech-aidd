@@ -37,7 +37,7 @@ export interface DashboardStats {
 }
 
 export const API_BASE_URL: string =
-  process.env.STATS_API_URL ?? "http://localhost:8081/api";
+  process.env["NEXT_PUBLIC_STATS_API_URL"] ?? "http://localhost:8000/api/v1";
 
 export async function getStats(period: Period): Promise<DashboardStats> {
   const url = `${API_BASE_URL}/stats?period=${period}`;

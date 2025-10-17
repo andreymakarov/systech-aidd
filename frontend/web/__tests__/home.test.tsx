@@ -29,8 +29,9 @@ describe("HomePage", () => {
 
     vi.spyOn(Stats, "getStats").mockResolvedValue(mock);
 
-    // @ts-expect-error - async server component default export
-    render(await HomePage({ searchParams: { period: "day" } }));
+    // Render the async server component by awaiting it and passing the element to RTL
+    const element = await HomePage({ searchParams: { period: "day" } });
+    render(element as unknown as React.ReactElement);
 
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
     expect(screen.getByText(/Total dialogs/i)).toBeInTheDocument();

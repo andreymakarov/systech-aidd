@@ -1,0 +1,2 @@
+"""Stats collectors package."""
+

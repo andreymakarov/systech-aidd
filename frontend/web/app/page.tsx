@@ -11,7 +11,8 @@ export default async function HomePage({
 }: {
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  const period = (searchParams?.period as Period) ?? "day";
+  const raw = searchParams?.["period"];
+  const period = ((Array.isArray(raw) ? raw[0] : raw) as Period) ?? "day";
   let data;
   try {
     data = await getStats(period);

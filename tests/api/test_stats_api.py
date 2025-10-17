@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from api.server import create_app
+from backend.app.main import create_app
 
 
 @pytest.fixture(scope="module")
@@ -14,7 +14,7 @@ def client() -> TestClient:
 
 @pytest.mark.parametrize("period,expected_points", [("day", 24), ("week", 7), ("month", 30)])
 def test_stats_endpoint_success(period: str, expected_points: int, client: TestClient) -> None:
-    resp = client.get("/api/stats", params={"period": period})
+    resp = client.get("/api/v1/stats", params={"period": period})
     assert resp.status_code == 200
     data = resp.json()
 
@@ -51,7 +51,7 @@ def test_stats_endpoint_success(period: str, expected_points: int, client: TestC
 
 
 def test_stats_endpoint_invalid_period(client: TestClient) -> None:
-    resp = client.get("/api/stats", params={"period": "year"})
+    resp = client.get("/api/v1/stats", params={"period": "year"})
     assert resp.status_code == 422
 
 
