@@ -54,6 +54,7 @@
   // Настройки терминала
   "terminal.integrated.env.windows": {
     "PYTHONPATH": "${workspaceFolder}/src"
-  }
+  },
+  "makefile.configureOnOpen": false
 }
 

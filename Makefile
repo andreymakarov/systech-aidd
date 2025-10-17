@@ -1,4 +1,4 @@
-.PHONY: install run clean format lint test qa
+.PHONY: install run clean format lint test qa run-stats-api test-stats-api
 
 install:
 	uv sync --all-extras
@@ -17,10 +17,16 @@ format:
 
 lint:
 	uv run ruff check src/
-	cd src && uv run mypy bot/
+	cd src && uv run mypy bot/ api/
 
 test:
 	uv run pytest
 
-qa: format lint
+qa: format lint test
+
+run-stats-api:
+	uv run uvicorn api.server:app --host 0.0.0.0 --port 8081
+
+test-stats-api:
+	uv run pytest -q tests/api/test_stats_api.py
 

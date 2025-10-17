@@ -44,7 +44,8 @@ def test_config_default_values(monkeypatch: pytest.MonkeyPatch) -> None:
     # Проверяем значения по умолчанию
     assert config.openrouter_base_url == "https://openrouter.ai/api/v1"
     assert config.openrouter_model == "openai/gpt-4o-mini"
-    assert "AI-ассистент" in config.system_prompt
+    assert config.role_prompt_file == "prompts/role.txt"
+    assert "AI-ассистент" in config.system_prompt  # Старый параметр (будет удален в фазе 6)
 
 
 def test_config_custom_values(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -53,13 +54,15 @@ def test_config_custom_values(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENROUTER_API_KEY", "test_api_key")
     monkeypatch.setenv("OPENROUTER_BASE_URL", "https://custom.api.url")
     monkeypatch.setenv("OPENROUTER_MODEL", "custom/model-name")
+    monkeypatch.setenv("ROLE_PROMPT_FILE", "custom/role.txt")
     monkeypatch.setenv("SYSTEM_PROMPT", "Custom system prompt")
     
     config = Config()
     
     assert config.openrouter_base_url == "https://custom.api.url"
     assert config.openrouter_model == "custom/model-name"
-    assert config.system_prompt == "Custom system prompt"
+    assert config.role_prompt_file == "custom/role.txt"
+    assert config.system_prompt == "Custom system prompt"  # Старый параметр (будет удален в фазе 6)
 
 
 def test_config_empty_required_env(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  bot:
+    build: .
+    env_file: .env
+    environment:
+      - DB_PATH=/app/data/bot.db
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/bot.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+
+
+

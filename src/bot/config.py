@@ -12,10 +12,15 @@ class Config:
         # Параметры с значениями по умолчанию
         self.openrouter_base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
         self.openrouter_model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+        self.role_prompt_file = os.getenv("ROLE_PROMPT_FILE", "prompts/role.txt")
+        # TODO: Удалить system_prompt в фазе 6 - будет заменен на RoleManager
         self.system_prompt = os.getenv(
             "SYSTEM_PROMPT",
             "Ты - полезный AI-ассистент. Отвечай на вопросы пользователя четко и по существу.",
         )
+
+        # Путь к БД (SQLite файл)
+        self.db_path = os.getenv("DB_PATH", "data/bot.db")
 
     def _get_required(self, key: str) -> str:
         """Получить обязательный параметр или выбросить ошибку"""
