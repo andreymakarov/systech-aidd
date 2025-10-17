@@ -36,11 +36,11 @@ def mock_config(monkeypatch: pytest.MonkeyPatch) -> Config:
 
 @pytest.fixture
 def mock_conversation_manager() -> ConversationManager:
-    """Фикстура для мока ConversationManager"""
+    """Фикстура для мока ConversationManager (async методы)."""
     manager = MagicMock(spec=ConversationManager)
-    manager.get_history.return_value = []
-    manager.add_message.return_value = None
-    manager.clear_history.return_value = None
+    manager.get_history = AsyncMock(return_value=[])
+    manager.add_message = AsyncMock(return_value=None)
+    manager.clear_history = AsyncMock(return_value=None)
     return manager
 
 

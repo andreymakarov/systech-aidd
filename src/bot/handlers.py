@@ -57,7 +57,7 @@ class MessageHandler:
                 )
 
             # Получаем историю диалога
-            history = self.conversation_manager.get_history(user_id)
+            history = await self.conversation_manager.get_history(user_id)
 
             # Определяем системный промпт: RoleManager или fallback на Config
             system_prompt = (
@@ -66,19 +66,24 @@ class MessageHandler:
                 else self.llm_client.config.system_prompt
             )
 
-            # Формируем запрос: system prompt + история + новое сообщение
-            messages = [
+            # Формируем запрос: system prompt + история (role/content) + новое сообщение
+            # Явно указываем тип для совместимости с mypy
+            history_llm: list[dict[str, str]] = [
+                {"role": str(m["role"]), "content": str(m["content"])} for m in history
+            ]
+            base_messages: list[dict[str, str]] = [
                 {"role": "system", "content": system_prompt},
-                *history,
                 {"role": "user", "content": text},
             ]
+            # Встраиваем историю между system и текущим сообщением
+            messages: list[dict[str, str]] = [base_messages[0], *history_llm, base_messages[1]]
 
             # Получаем ответ от LLM
             response = await self.llm_client.generate_response(messages)
 
             # Сохраняем сообщение пользователя и ответ в историю
-            self.conversation_manager.add_message(user_id, "user", text)
-            self.conversation_manager.add_message(user_id, "assistant", response)
+            await self.conversation_manager.add_message(user_id, "user", text)
+            await self.conversation_manager.add_message(user_id, "assistant", response)
 
             # Отправляем ответ пользователю
             await message.answer(response)
@@ -94,7 +99,7 @@ class MessageHandler:
         logging.info(f"User {user_id} executed /clear command")
 
         # Очищаем историю диалога
-        self.conversation_manager.clear_history(user_id)
+        await self.conversation_manager.clear_history(user_id)
 
         await message.answer(HISTORY_CLEARED_MESSAGE)
 

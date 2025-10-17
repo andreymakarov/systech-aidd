@@ -19,6 +19,9 @@ class Config:
             "Ты - полезный AI-ассистент. Отвечай на вопросы пользователя четко и по существу.",
         )
 
+        # Путь к БД (SQLite файл)
+        self.db_path = os.getenv("DB_PATH", "data/bot.db")
+
     def _get_required(self, key: str) -> str:
         """Получить обязательный параметр или выбросить ошибку"""
         value = os.getenv(key)
