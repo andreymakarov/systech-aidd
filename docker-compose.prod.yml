@@ -1,0 +1,44 @@
+# Docker Compose для использования образов из GitHub Container Registry
+# 
+# Использование:
+#   docker-compose -f docker-compose.prod.yml up -d
+#
+# Примечание: замените [owner] на ваш GitHub username или organization
+# Образы должны быть опубликованы в GHCR и доступны публично
+
+services:
+  backend:
+    image: ghcr.io/[owner]/systech-aidd-backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/backend/data/bot.db
+      - STATS_COLLECTOR=${STATS_COLLECTOR:-real}
+      - STATS_DB_URL=sqlite:///backend/data/bot.db
+    volumes:
+      - ./backend/data:/app/backend/data
+    restart: unless-stopped
+    command: sh -c "alembic -c backend/alembic.ini upgrade head && uvicorn backend.app.main:app --host 0.0.0.0 --port 8000"
+
+  bot:
+    image: ghcr.io/[owner]/systech-aidd-bot:latest
+    env_file: .env
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/[owner]/systech-aidd-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      # For client-side requests from browser
+      - NEXT_PUBLIC_STATS_API_URL=http://localhost:8000/api/v1
+      # For server-side requests from container
+      - STATS_API_URL_INTERNAL=http://backend:8000/api/v1
+    depends_on:
+      - backend
+    restart: unless-stopped
+

@@ -1,5 +1,7 @@
 # Systech AIDD - LLM-ассистент для Telegram
 
+[![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
+
 Минималистичный Telegram-бот с интеграцией LLM и REST API бэкендом. Микросервисная архитектура с разделением на bot и backend.
 
 ## Возможности
@@ -217,6 +219,75 @@ error connecting to docker daemon
 
 **Frontend не подключается к backend:**
 Убедитесь, что переменная `NEXT_PUBLIC_STATS_API_URL` указывает на `http://localhost:8000/api/v1` (не на `http://backend:8000`, так как frontend обращается из браузера).
+
+### Использование образов из GitHub Container Registry
+
+Образы автоматически публикуются в GitHub Container Registry (GHCR) при обновлении ветки `release`. Это позволяет запускать приложение без локальной сборки.
+
+#### Доступные образы
+
+Все образы доступны публично без авторизации:
+
+- `ghcr.io/[owner]/systech-aidd-bot:latest`
+- `ghcr.io/[owner]/systech-aidd-backend:latest`
+- `ghcr.io/[owner]/systech-aidd-frontend:latest`
+
+**Замените `[owner]` на ваш GitHub username или organization.**
+
+#### Запуск из registry
+
+```bash
+# 1. Pull образов (опционально, docker-compose сделает это автоматически)
+docker pull ghcr.io/[owner]/systech-aidd-bot:latest
+docker pull ghcr.io/[owner]/systech-aidd-backend:latest
+docker pull ghcr.io/[owner]/systech-aidd-frontend:latest
+
+# 2. Запуск всех сервисов из registry
+docker-compose -f docker-compose.prod.yml up -d
+
+# 3. Проверка статуса
+docker-compose -f docker-compose.prod.yml ps
+
+# 4. Просмотр логов
+docker-compose -f docker-compose.prod.yml logs -f
+
+# 5. Остановка
+docker-compose -f docker-compose.prod.yml down
+```
+
+#### Различия между режимами
+
+**Локальная разработка** (`docker-compose.yml`):
+- Собирает образы из исходного кода
+- Подходит для разработки и отладки
+- Команда: `docker-compose up -d --build`
+
+**Production** (`docker-compose.prod.yml`):
+- Использует готовые образы из registry
+- Быстрый запуск без сборки
+- Подходит для развертывания на серверах
+- Команда: `docker-compose -f docker-compose.prod.yml up -d`
+
+#### Версии образов
+
+Доступны два тега для каждого образа:
+
+- `latest` - последняя стабильная версия из ветки `release`
+- `sha-{commit}` - конкретная версия для определенного коммита
+
+Пример использования конкретной версии:
+```bash
+docker pull ghcr.io/[owner]/systech-aidd-bot:sha-abc123def456
+```
+
+#### CI/CD Pipeline
+
+Образы автоматически собираются и публикуются через GitHub Actions:
+
+- **Push в `main`**: только сборка и проверка
+- **Push в `release`**: сборка + публикация в GHCR
+
+Статус сборки: [![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
 
 ## Использование
 
