@@ -289,6 +289,57 @@ docker pull ghcr.io/[owner]/systech-aidd-bot:sha-abc123def456
 
 Статус сборки: [![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
 
+### Production Deployment
+
+Для развертывания приложения на production сервере используйте готовые Docker образы из GitHub Container Registry.
+
+**Требования к серверу:**
+- Docker 20.10+
+- Docker Compose 1.29+
+- SSH доступ
+- Открытые порты для API и Frontend
+
+**Быстрый старт:**
+
+1. **Подготовка файлов:**
+   ```bash
+   # Создать .env из шаблона
+   cp env.production.template .env
+   
+   # Отредактировать .env и заполнить:
+   # - TELEGRAM_BOT_TOKEN
+   # - OPENROUTER_API_KEY
+   # - NEXT_PUBLIC_STATS_API_URL (с IP вашего сервера)
+   ```
+
+2. **Копирование на сервер:**
+   ```bash
+   # Скопировать конфигурацию
+   scp docker-compose.prod.yml user@server:/opt/app/
+   scp .env user@server:/opt/app/
+   ```
+
+3. **Запуск на сервере:**
+   ```bash
+   # Подключиться к серверу
+   ssh user@server
+   
+   # Перейти в директорию
+   cd /opt/app
+   
+   # Загрузить и запустить
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+**Подробная инструкция:** [doc/guides/manual-deploy.md](doc/guides/manual-deploy.md)
+
+В инструкции описаны:
+- Настройка SSH ключей
+- Копирование файлов
+- Проверка работоспособности
+- Устранение неполадок
+- Управление сервисами
+
 ## Использование
 
 ### Команды бота

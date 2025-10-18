@@ -16,8 +16,8 @@ MVP DevOps roadmap для проекта Systech AIDD. Цель: пройти п
 | Спринт | Описание | Статус | План |
 |--------|----------|--------|------|
 | D0 | Basic Docker Setup | ✅ Завершено (18.10.2025) | [План D0](plans/d0-implementation.md) |
-| D1 | Build & Publish | 🚧 В работе | [План D1](plans/d1-implementation.md) |
-| D2 | Развертывание на сервер | ⏳ Ожидает | - |
+| D1 | Build & Publish | ✅ Завершено (18.10.2025) | [План D1](plans/d1-implementation.md) |
+| D2 | Развертывание на сервер | 🚧 В работе | [План D2](plans/d2-manual-deploy.md) |
 | D3 | Auto Deploy | ⏳ Ожидает | - |
 
 ## Спринты
