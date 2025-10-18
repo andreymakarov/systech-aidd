@@ -1,6 +1,6 @@
 # Systech AIDD - LLM-ассистент для Telegram
 
-[![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
+[![Docker Build](https://github.com/andreymakarov/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/andreymakarov/systech-aidd/actions/workflows/build.yml)
 
 Минималистичный Telegram-бот с интеграцией LLM и REST API бэкендом. Микросервисная архитектура с разделением на bot и backend.
 
@@ -228,19 +228,17 @@ error connecting to docker daemon
 
 Все образы доступны публично без авторизации:
 
-- `ghcr.io/[owner]/systech-aidd-bot:latest`
-- `ghcr.io/[owner]/systech-aidd-backend:latest`
-- `ghcr.io/[owner]/systech-aidd-frontend:latest`
-
-**Замените `[owner]` на ваш GitHub username или organization.**
+- `ghcr.io/andreymakarov/systech-aidd-bot:latest`
+- `ghcr.io/andreymakarov/systech-aidd-backend:latest`
+- `ghcr.io/andreymakarov/systech-aidd-frontend:latest`
 
 #### Запуск из registry
 
 ```bash
 # 1. Pull образов (опционально, docker-compose сделает это автоматически)
-docker pull ghcr.io/[owner]/systech-aidd-bot:latest
-docker pull ghcr.io/[owner]/systech-aidd-backend:latest
-docker pull ghcr.io/[owner]/systech-aidd-frontend:latest
+docker pull ghcr.io/andreymakarov/systech-aidd-bot:latest
+docker pull ghcr.io/andreymakarov/systech-aidd-backend:latest
+docker pull ghcr.io/andreymakarov/systech-aidd-frontend:latest
 
 # 2. Запуск всех сервисов из registry
 docker-compose -f docker-compose.prod.yml up -d
@@ -277,7 +275,7 @@ docker-compose -f docker-compose.prod.yml down
 
 Пример использования конкретной версии:
 ```bash
-docker pull ghcr.io/[owner]/systech-aidd-bot:sha-abc123def456
+docker pull ghcr.io/andreymakarov/systech-aidd-bot:sha-abc123def456
 ```
 
 #### CI/CD Pipeline
@@ -287,7 +285,7 @@ docker pull ghcr.io/[owner]/systech-aidd-bot:sha-abc123def456
 - **Push в `main`**: только сборка и проверка
 - **Push в `release`**: сборка + публикация в GHCR
 
-Статус сборки: [![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
+Статус сборки: [![Docker Build](https://github.com/andreymakarov/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/andreymakarov/systech-aidd/actions/workflows/build.yml)
 
 ## Использование
 

@@ -3,12 +3,12 @@
 # Использование:
 #   docker-compose -f docker-compose.prod.yml up -d
 #
-# Примечание: замените [owner] на ваш GitHub username или organization
+# Примечание: образы из GitHub Container Registry
 # Образы должны быть опубликованы в GHCR и доступны публично
 
 services:
   backend:
-    image: ghcr.io/[owner]/systech-aidd-backend:latest
+    image: ghcr.io/andreymakarov/systech-aidd-backend:latest
     ports:
       - "8000:8000"
     environment:
@@ -21,7 +21,7 @@ services:
     command: sh -c "alembic -c backend/alembic.ini upgrade head && uvicorn backend.app.main:app --host 0.0.0.0 --port 8000"
 
   bot:
-    image: ghcr.io/[owner]/systech-aidd-bot:latest
+    image: ghcr.io/andreymakarov/systech-aidd-bot:latest
     env_file: .env
     environment:
       - BACKEND_URL=http://backend:8000
@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ghcr.io/[owner]/systech-aidd-frontend:latest
+    image: ghcr.io/andreymakarov/systech-aidd-frontend:latest
     ports:
       - "3000:3000"
     environment:
