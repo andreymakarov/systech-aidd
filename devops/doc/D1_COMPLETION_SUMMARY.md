@@ -1,8 +1,9 @@
 # D1: Build & Publish - Completion Summary
 
 **Sprint:** D1  
-**Status:** ⏳ Требует ручных действий  
-**Date:** October 18, 2025
+**Status:** ⏳ Ожидает настройки публичного доступа  
+**Date:** October 18, 2025  
+**GitHub Owner:** andreymakarov
 
 ## Что было сделано автоматически
 
@@ -47,47 +48,49 @@
    - Статус D1 изменен на "🚧 В работе"
    - Добавлена ссылка на план реализации
 
-## Что требует ручных действий
+## Что было выполнено автоматически
 
-### 🔧 Шаг 1: Создание ветки release
+### ✅ Шаг 1: Создание ветки release (ЗАВЕРШЕНО)
 
-**Важно:** Образы публикуются только при push в ветку `release`.
+Ветка `release` создана и запушена в remote репозиторий.
 
+**Что произошло:**
+- ✅ GitHub Actions автоматически запустил workflow
+- ✅ Собирает все три образа (bot, backend, frontend)
+- ✅ Публикует их в GitHub Container Registry
+- ⏳ Образы ПРИВАТНЫЕ (требуется следующий шаг)
+
+**Проверить статус сборки:**
 ```bash
-# 1. Переключиться на актуальную ветку (main или devops)
-git checkout main  # или git checkout devops
-
-# 2. Обновить локальную копию
-git pull origin main
-
-# 3. Создать новую ветку release
-git checkout -b release
-
-# 4. Запушить ветку в remote репозиторий
-git push -u origin release
+https://github.com/andreymakarov/systech-aidd/actions
 ```
 
-**Что произойдет после push:**
-- GitHub Actions автоматически запустит workflow
-- Соберет все три образа (bot, backend, frontend)
-- Опубликует их в GitHub Container Registry
-- Образы будут ПРИВАТНЫМИ (требуется следующий шаг)
+### ✅ Шаг 2: Обновление username (ЗАВЕРШЕНО)
 
-### 🔧 Шаг 2: Настройка публичного доступа к образам
+GitHub username `andreymakarov` установлен во всех файлах:
+- ✅ `docker-compose.prod.yml` - все образы используют `ghcr.io/andreymakarov/systech-aidd-*`
+- ✅ `README.md` - badge URLs и примеры команд обновлены
 
-После первой публикации образы будут приватными. Нужно вручную изменить их visibility на публичную:
+## Что требует ручных действий
+
+### 🔧 Шаг 3: Настройка публичного доступа к образам (ТРЕБУЕТСЯ)
+
+**ВАЖНО:** После завершения сборки образы будут приватными. Нужно вручную изменить их visibility на публичную.
 
 **Для каждого из трех образов:**
 
-1. Перейти на GitHub → Ваш профиль/Organization → **Packages**
-   - URL: `https://github.com/[owner]?tab=packages`
+1. Дождаться завершения GitHub Actions workflow (~5-10 минут)
+   - Проверить: https://github.com/andreymakarov/systech-aidd/actions
 
-2. Найти пакеты:
+2. Перейти на GitHub → Packages
+   - URL: https://github.com/andreymakarov?tab=packages
+
+3. Найти пакеты:
    - `systech-aidd-bot`
    - `systech-aidd-backend`
    - `systech-aidd-frontend`
 
-3. Для каждого пакета:
+4. Для каждого пакета:
    - Кликнуть на пакет
    - Справа внизу: **Package settings**
    - Прокрутить до **Danger Zone**
@@ -95,40 +98,9 @@ git push -u origin release
    - Подтвердить изменение
 
 **После этого:**
-- Образы доступны для pull без авторизации
-- Любой пользователь может использовать `docker pull ghcr.io/[owner]/systech-aidd-[service]:latest`
-
-### 🔧 Шаг 3: Обновление docker-compose.prod.yml
-
-Замените `[owner]` на ваш реальный GitHub username или organization:
-
-```bash
-# Например, если ваш username: johndoe
-# Было:
-# image: ghcr.io/[owner]/systech-aidd-bot:latest
-# Стало:
-# image: ghcr.io/johndoe/systech-aidd-bot:latest
-```
-
-**Где заменить:**
-- `docker-compose.prod.yml` - все три образа (backend, bot, frontend)
-- Опционально: `README.md` - в примерах команд
-
-### 🔧 Шаг 4: Обновление badge в README.md
-
-Замените `[owner]` в badge URL на ваш GitHub username/organization:
-
-```markdown
-# Было:
-[![Docker Build](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/[owner]/systech-aidd/actions/workflows/build.yml)
-
-# Стало (например):
-[![Docker Build](https://github.com/johndoe/systech-aidd/actions/workflows/build.yml/badge.svg)](https://github.com/johndoe/systech-aidd/actions/workflows/build.yml)
-```
-
-Это в двух местах:
-- В начале README.md
-- В секции "CI/CD Pipeline"
+- ✅ Образы доступны для pull без авторизации
+- ✅ Любой пользователь может использовать образы
+- ✅ Готовность к тестированию
 
 ## Проверка работоспособности
 
@@ -136,28 +108,28 @@ git push -u origin release
 
 ```bash
 # Перейти на страницу Actions
-https://github.com/[owner]/systech-aidd/actions
+https://github.com/andreymakarov/systech-aidd/actions
 
 # Проверить:
 # ✅ Workflow "Build and Publish Docker Images" запущен
-# ✅ Все 3 job (bot, backend, frontend) успешно завершены
-# ✅ Для release ветки: образы опубликованы в GHCR
+# ⏳ Все 3 job (bot, backend, frontend) выполняются/завершены
+# ⏳ Для release ветки: образы публикуются в GHCR
 ```
 
 ### ✅ Проверка 2: GitHub Container Registry
 
 ```bash
 # Перейти на страницу Packages
-https://github.com/[owner]?tab=packages
+https://github.com/andreymakarov?tab=packages
 
 # Проверить наличие 3 пакетов:
-# ✅ systech-aidd-bot
-# ✅ systech-aidd-backend
-# ✅ systech-aidd-frontend
+# ⏳ systech-aidd-bot
+# ⏳ systech-aidd-backend
+# ⏳ systech-aidd-frontend
 
 # Для каждого пакета проверить:
-# ✅ Visibility: Public
-# ✅ Теги: latest, sha-{commit}
+# ⏳ Visibility: Public (требует ручной настройки)
+# ⏳ Теги: latest, sha-efb1480
 ```
 
 ### ✅ Проверка 3: Pull образов локально
@@ -165,18 +137,18 @@ https://github.com/[owner]?tab=packages
 После настройки публичного доступа:
 
 ```bash
-# Pull образов (замените [owner] на ваш username)
-docker pull ghcr.io/[owner]/systech-aidd-bot:latest
-docker pull ghcr.io/[owner]/systech-aidd-backend:latest
-docker pull ghcr.io/[owner]/systech-aidd-frontend:latest
+# Pull образов (после настройки публичного доступа)
+docker pull ghcr.io/andreymakarov/systech-aidd-bot:latest
+docker pull ghcr.io/andreymakarov/systech-aidd-backend:latest
+docker pull ghcr.io/andreymakarov/systech-aidd-frontend:latest
 
 # Проверить наличие образов
 docker images | grep systech-aidd
 
 # Ожидаемый вывод:
-# ghcr.io/[owner]/systech-aidd-bot        latest    ...
-# ghcr.io/[owner]/systech-aidd-backend    latest    ...
-# ghcr.io/[owner]/systech-aidd-frontend   latest    ...
+# ghcr.io/andreymakarov/systech-aidd-bot        latest    ...
+# ghcr.io/andreymakarov/systech-aidd-backend    latest    ...
+# ghcr.io/andreymakarov/systech-aidd-frontend   latest    ...
 ```
 
 ### ✅ Проверка 4: Запуск из registry
@@ -259,23 +231,24 @@ systech-aidd/
 После выполнения всех ручных шагов:
 
 - [x] Workflow автоматически запускается при push в main и release
-- [x] Сборка проходит успешно для всех трех сервисов
-- [x] Образы публикуются в GHCR только при push в release
-- [ ] Образы доступны публично без авторизации *(требует ручной настройки)*
-- [ ] Локально можно pull и запустить образы из registry *(после ручной настройки)*
-- [x] docker-compose.prod.yml работает корректно
+- [x] Ветка release создана и запушена
+- [x] GitHub username обновлен на andreymakarov
+- [x] docker-compose.prod.yml настроен с правильным username
+- [x] Badge статуса сборки обновлен в README
 - [x] Документация актуальна и содержит все инструкции
-- [ ] Badge статуса сборки отображается в README *(требует замены [owner])*
+- [ ] Сборка образов завершена успешно *(ожидание завершения workflow)*
+- [ ] Образы доступны публично без авторизации *(требует ручной настройки)*
+- [ ] Локально можно pull и запустить образы из registry *(после публичного доступа)*
 
 ## Следующие шаги
 
-### Немедленные действия
+### Выполненные действия
 
-1. ✅ Создать ветку `release` и запушить
-2. ✅ Проверить успешность GitHub Actions workflow
-3. ✅ Настроить публичный доступ к образам в GHCR
-4. ✅ Заменить `[owner]` в docker-compose.prod.yml и README.md
-5. ✅ Протестировать pull и запуск образов локально
+1. ✅ Создать ветку `release` и запушить - **ЗАВЕРШЕНО**
+2. ⏳ Дождаться завершения GitHub Actions workflow (~5-10 минут)
+3. ⏳ Настроить публичный доступ к образам в GHCR - **ТРЕБУЕТСЯ**
+4. ✅ Заменить `[owner]` в docker-compose.prod.yml и README.md - **ЗАВЕРШЕНО**
+5. ⏳ Протестировать pull и запуск образов локально - **ПОСЛЕ ШАГА 3**
 
 ### Обновление после выполнения
 
@@ -304,13 +277,13 @@ git push
 
 ## Полезные ссылки
 
-После выполнения ручных шагов эти ссылки будут активны:
+Активные ссылки для проверки:
 
-- **GitHub Actions**: `https://github.com/[owner]/systech-aidd/actions`
-- **GitHub Packages**: `https://github.com/[owner]?tab=packages`
-- **Образ Bot**: `https://github.com/[owner]/systech-aidd/pkgs/container/systech-aidd-bot`
-- **Образ Backend**: `https://github.com/[owner]/systech-aidd/pkgs/container/systech-aidd-backend`
-- **Образ Frontend**: `https://github.com/[owner]/systech-aidd/pkgs/container/systech-aidd-frontend`
+- **GitHub Actions**: https://github.com/andreymakarov/systech-aidd/actions
+- **GitHub Packages**: https://github.com/andreymakarov?tab=packages
+- **Образ Bot**: https://github.com/andreymakarov/systech-aidd/pkgs/container/systech-aidd-bot
+- **Образ Backend**: https://github.com/andreymakarov/systech-aidd/pkgs/container/systech-aidd-backend
+- **Образ Frontend**: https://github.com/andreymakarov/systech-aidd/pkgs/container/systech-aidd-frontend
 
 ## Дополнительная информация
 
@@ -320,7 +293,8 @@ git push
 
 ```bash
 # Найти SHA в GitHub Actions run
-docker pull ghcr.io/[owner]/systech-aidd-bot:sha-abc123def456
+# Текущий commit SHA: efb1480
+docker pull ghcr.io/andreymakarov/systech-aidd-bot:sha-efb1480
 ```
 
 ### Обновление образов
@@ -349,6 +323,15 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ---
 
-**Статус:** Автоматическая часть завершена ✅ | Требует ручных действий ⏳  
+**Статус:** Workflow запущен ⏳ | Ожидает настройки публичного доступа 🔧  
 **Следующий спринт:** D2 - Развертывание на сервер
+
+## Текущий прогресс
+
+✅ Ветка release создана  
+✅ GitHub username установлен (andreymakarov)  
+✅ Файлы конфигурации обновлены  
+⏳ GitHub Actions выполняет сборку  
+⏳ Ожидание публикации образов в GHCR  
+🔧 После завершения: настроить публичный доступ
 
