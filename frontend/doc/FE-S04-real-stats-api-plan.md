@@ -19,8 +19,8 @@ Switch frontend dashboard from Mock to a real Stats API using SQLite `messages` 
   - Activity: 24 hourly points for `day`; daily points for `week` (7) and `month` (30). Each point is dialogs started in the bucket.
   - Recent dialogs: last 10–20 sessions overall with `duration_sec`, `num_messages`, `status` heuristic.
   - Top users within the selected window: `dialogs_count`, `messages_count`, `last_active_at` sorted by `(dialogs_count, messages_count)`.
-- Router switch by env in `src/api/routers/stats.py`:
-  - `STATS_COLLECTOR=real` enables real collector; default is mock.
+- Router in `backend/app/routers/stats.py`:
+  - Uses `RealStatCollector` by default (mock collector has been removed).
 - Configuration:
   - `STATS_DB_URL` (default `sqlite:///data/bot.db`).
 
@@ -40,7 +40,7 @@ make run-stats-api
 ```
 
 ### Acceptance Criteria
-- With `STATS_COLLECTOR=real`, `GET /api/stats` returns valid data built from DB, matching the frontend schema.
+- `GET /api/stats` returns valid data built from DB, matching the frontend schema.
 - Tests for real collector and router pass.
 - Docs updated with real-mode instructions.
 

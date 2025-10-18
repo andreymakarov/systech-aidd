@@ -27,8 +27,7 @@
   - Формат: `sqlite+aiosqlite:///<path_to_db>`
 
 #### Stats API
-- `STATS_COLLECTOR` → `mock` (режим работы)
-  - `mock` — генерация случайных данных для разработки
+- `STATS_COLLECTOR` → `real` (режим работы)
   - `real` — чтение из реальной БД
 - `STATS_DB_URL` → `sqlite:///backend/data/bot.db`
   - Путь для RealStatCollector (без async префикса)
@@ -57,7 +56,7 @@ BACKEND_URL=http://localhost:8000
 DATABASE_URL=sqlite+aiosqlite:///./backend/data/bot.db
 
 # Stats Configuration
-STATS_COLLECTOR=mock
+STATS_COLLECTOR=real
 STATS_DB_URL=sqlite:///backend/data/bot.db
 STATS_API_CORS_ORIGINS=http://localhost:3000,http://localhost:8000
 ```
@@ -71,7 +70,7 @@ services:
   backend:
     environment:
       - DATABASE_URL=sqlite+aiosqlite:////app/backend/data/bot.db
-      - STATS_COLLECTOR=${STATS_COLLECTOR:-mock}
+      - STATS_COLLECTOR=${STATS_COLLECTOR:-real}
       - STATS_DB_URL=sqlite:///backend/data/bot.db
 
   bot:
@@ -177,15 +176,15 @@ def get_database_url() -> str:
 
 ### Development (локальная разработка)
 ```bash
-STATS_COLLECTOR=mock
+STATS_COLLECTOR=real
 BACKEND_URL=http://localhost:8000
 ```
-- Mock данные для статистики
+- Real data from database for statistics
 - Backend и bot запущены отдельно
 
 ### Integration (docker-compose)
 ```bash
-STATS_COLLECTOR=mock  # или real
+STATS_COLLECTOR=real
 BACKEND_URL=http://backend:8000
 ```
 - Backend и bot в контейнерах

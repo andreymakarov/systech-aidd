@@ -1,4 +1,4 @@
-## Stats API (Mock/Real)
+## Stats API (Real Data)
 
 ### Run
 
@@ -9,10 +9,11 @@ make run-stats-api
 - Swagger UI: `http://localhost:8081/docs`
 - OpenAPI JSON: `http://localhost:8081/openapi.json`
 
-Real mode (SQLite `data/bot.db`):
+The API uses real data from SQLite database (`data/bot.db`).
+
+You can customize the database location:
 
 ```bash
-STATS_COLLECTOR=real \
 STATS_DB_URL=sqlite:///data/bot.db \
 make run-stats-api
 ```

@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import os
-import sqlite3
-from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from backend.app.collectors.base import StatCollector
 from backend.app.models import ActivityPoint, DashboardStats, RecentDialog, Summary, TopUser
+from backend.db.models import Message
 
 DIALOG_GAP: timedelta = timedelta(minutes=60)
 RECENT_LIMIT: int = 20
@@ -56,17 +57,15 @@ class _Session:
 
 
 class RealStatCollector(StatCollector):
-    def __init__(self, db_url: str | None = None) -> None:
-        path = db_url or os.getenv("STATS_DB_URL") or "sqlite:///backend/data/bot.db"
-        # Support URLs like sqlite:///absolute/path.db
-        self._db_path = path.removeprefix("sqlite:///")
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
 
-    def get_stats(self, period: str) -> DashboardStats:
+    async def get_stats(self, period: str) -> DashboardStats:
         normalized = period.lower()
         if normalized not in {"day", "week", "month"}:
             raise ValueError("period must be one of: day, week, month")
 
-        now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
+        now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0) 
         if normalized == "day":
             bucket_size = timedelta(hours=1)
             num_points = 24
@@ -82,7 +81,7 @@ class RealStatCollector(StatCollector):
         # Headroom to detect sessions that started just before window
         headroom_start = start - DIALOG_GAP
 
-        messages = list(self._iter_messages(headroom_start, now))
+        messages = await self._fetch_messages(headroom_start, now + timedelta(hours=1))
         sessions = self._sessionize(messages)
 
         # Filter sessions for period-based aggregates
@@ -91,6 +90,7 @@ class RealStatCollector(StatCollector):
         # Build activity buckets
         bucket_starts: list[datetime] = [start + i * bucket_size for i in range(num_points)]
         activity_counts = dict.fromkeys(bucket_starts, 0)
+        messages_counts = dict.fromkeys(bucket_starts, 0)
         for s in sessions_in_period:
             # Align to bucket start
             if bucket_size == timedelta(hours=1):
@@ -104,9 +104,10 @@ class RealStatCollector(StatCollector):
                 key = bucket_starts[-1]
             if key in activity_counts:
                 activity_counts[key] += 1
+                messages_counts[key] += s.num_messages
 
         activity: list[ActivityPoint] = [
-            ActivityPoint(ts=_to_iso_z(b), dialogs=activity_counts[b], messages=activity_counts[b])
+            ActivityPoint(ts=_to_iso_z(b), dialogs=activity_counts[b], messages=messages_counts[b])
             for b in bucket_starts
         ]
 
@@ -187,27 +188,26 @@ class RealStatCollector(StatCollector):
             top_users=top,
         )
 
-    def _iter_messages(self, start: datetime, end: datetime) -> Iterable[_Msg]:
+    async def _fetch_messages(self, start: datetime, end: datetime) -> list[_Msg]:
         # created_at is stored as ISO string; range filter via string compare works
         start_s = start.astimezone(UTC).isoformat()
         end_s = end.astimezone(UTC).isoformat()
-        conn = sqlite3.connect(self._db_path)
-        try:
-            cur = conn.cursor()
-            cur.execute(
-                """
-                SELECT user_id, created_at
-                FROM messages
-                WHERE deleted_at IS NULL AND created_at >= ? AND created_at <= ?
-                ORDER BY user_id ASC, created_at ASC
-                """,
-                (start_s, end_s),
+
+        result = await self._session.execute(
+            select(Message.user_id, Message.created_at)
+            .where(
+                Message.deleted_at.is_(None),
+                Message.created_at >= start_s,
+                Message.created_at <= end_s
             )
-            for row in cur.fetchall():
-                user_id, created_at = row
-                yield _Msg(user_id=int(user_id), created_at=_parse_dt(created_at))
-        finally:
-            conn.close()
+            .order_by(Message.user_id, Message.created_at)
+        )
+
+        messages = []
+        for row in result.all():
+            user_id, created_at = row
+            messages.append(_Msg(user_id=int(user_id), created_at=_parse_dt(created_at)))
+        return messages
 
     def _sessionize(self, messages: list[_Msg]) -> list[_Session]:
         sessions: list[_Session] = []

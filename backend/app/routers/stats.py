@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-import os
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import APIRouter, HTTPException, Query
-
-from backend.app.collectors.mock import MockStatCollector
 from backend.app.collectors.real import RealStatCollector
 from backend.app.models import DashboardStatsModel, Period
+from backend.db.session import get_db
 
 router = APIRouter(prefix="/api/v1", tags=["stats"])
 
-backend = os.getenv("STATS_COLLECTOR", "mock").lower()
-collector = RealStatCollector() if backend == "real" else MockStatCollector()
-
 
 @router.get("/stats", response_model=DashboardStatsModel)
-def get_stats(period: str = Query(..., description="day|week|month")) -> DashboardStatsModel:
+async def get_stats(
+    period: str = Query(..., description="day|week|month"),
+    session: AsyncSession = Depends(get_db),  # noqa: B008
+) -> DashboardStatsModel:
     normalized = period.lower()
     if normalized not in {p.value for p in Period}:  # case-insensitive enum check
         raise HTTPException(status_code=422, detail="Invalid period. Use day|week|month")
@@ -29,7 +28,8 @@ def get_stats(period: str = Query(..., description="day|week|month")) -> Dashboa
         TopUserModel,
     )
 
-    stats = collector.get_stats(normalized)
+    collector = RealStatCollector(session)
+    stats = await collector.get_stats(normalized)
     # Pydantic will validate and coerce the response model
     return DashboardStatsModel(
         period=Period(stats.period),

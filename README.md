@@ -68,7 +68,7 @@ DATABASE_URL=sqlite+aiosqlite:///./backend/data/bot.db
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 OPENROUTER_MODEL=openai/gpt-4o-mini
 ROLE_PROMPT_FILE=prompts/role.txt
-STATS_COLLECTOR=mock
+STATS_COLLECTOR=real
 ```
 
 #### 4. Запуск

@@ -1,60 +1,88 @@
 from __future__ import annotations
 
-import os
-import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
-from fastapi.testclient import TestClient
-
 from backend.app.main import create_app
+from backend.db.models import Base, Message
+from backend.db.session import get_db
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
 def iso(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).isoformat()
+    return dt.astimezone(UTC).isoformat()
 
 
 @pytest.fixture
-def real_client_tmpdb(tmp_path) -> TestClient:
+async def async_test_db_session(tmp_path):
+    """Create a temporary async test database with sample data."""
     db_path = tmp_path / "stats_real.db"
-    conn = sqlite3.connect(db_path.as_posix())
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            """
-            CREATE TABLE messages (
-                id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                role TEXT NOT NULL,
-                content TEXT NOT NULL,
-                length INTEGER NOT NULL,
-                created_at TEXT NOT NULL,
-                deleted_at TEXT
-            );
-            """
-        )
-        now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
-        rows = [
-            (1, 'user', 'x', 1, iso(now - timedelta(hours=2)), None),
-            (1, 'assistant', 'y', 1, iso(now - timedelta(hours=2) + timedelta(minutes=5)), None),
-            (2, 'user', 'z', 1, iso(now - timedelta(hours=1)), None),
+    test_db_url = f"sqlite+aiosqlite:///{db_path.as_posix()}"
+    engine = create_async_engine(test_db_url, echo=False)
+
+    # Create tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    # Create session factory
+    async_session_maker = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
+
+    # Insert test data
+    async with async_session_maker() as session:
+        now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
+        messages = [
+            Message(
+                user_id=1,
+                role="user",
+                content="x",
+                length=1,
+                created_at=iso(now - timedelta(hours=2)),
+                deleted_at=None,
+            ),
+            Message(
+                user_id=1,
+                role="assistant",
+                content="y",
+                length=1,
+                created_at=iso(now - timedelta(hours=2) + timedelta(minutes=5)),
+                deleted_at=None,
+            ),
+            Message(
+                user_id=2,
+                role="user",
+                content="z",
+                length=1,
+                created_at=iso(now - timedelta(hours=1)),
+                deleted_at=None,
+            ),
         ]
-        cur.executemany(
-            "INSERT INTO messages (user_id, role, content, length, created_at, deleted_at) VALUES (?, ?, ?, ?, ?, ?)",
-            rows,
-        )
-        conn.commit()
-    finally:
-        conn.close()
+        for msg in messages:
+            session.add(msg)
+        await session.commit()
 
-    os.environ["STATS_COLLECTOR"] = "real"
-    os.environ["STATS_DB_URL"] = f"sqlite:///{db_path.as_posix()}"
+    yield async_session_maker
+
+    await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_stats_endpoint_real_mode_day(async_test_db_session, tmp_path) -> None:  # noqa: ARG001
+    """Test stats endpoint with real data using async SQLAlchemy session."""
+    # Override the database dependency
+    async def override_get_db():
+        async with async_test_db_session() as session:
+            yield session
+
     app = create_app()
-    return TestClient(app)
+    app.dependency_overrides[get_db] = override_get_db
 
+    # Use TestClient (it handles async automatically)
+    client = TestClient(app)
+    resp = client.get("/api/v1/stats", params={"period": "day"})
 
-def test_stats_endpoint_real_mode_day(real_client_tmpdb: TestClient) -> None:
-    resp = real_client_tmpdb.get("/api/v1/stats", params={"period": "day"})
     assert resp.status_code == 200
     data = resp.json()
     assert data["period"] == "day"

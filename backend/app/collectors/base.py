@@ -8,7 +8,7 @@ from backend.app.models import DashboardStats
 
 
 class StatCollector(Protocol):
-    def get_stats(self, period: str) -> DashboardStats:  # case-insensitive input
+    async def get_stats(self, period: str) -> DashboardStats:  # case-insensitive input
         """Return dashboard statistics for the given period.
 
         Period must be one of: day, week, month (case-insensitive).

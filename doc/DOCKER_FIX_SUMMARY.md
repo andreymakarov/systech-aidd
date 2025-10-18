@@ -54,7 +54,7 @@ services:  # ✅ No version attribute
       - "8000:8000"
     environment:
       - DATABASE_URL=sqlite+aiosqlite:////app/backend/data/bot.db
-      - STATS_COLLECTOR=${STATS_COLLECTOR:-mock}
+      - STATS_COLLECTOR=${STATS_COLLECTOR:-real}
       - STATS_DB_URL=sqlite:///backend/data/bot.db
     volumes:
       - ./backend/data:/app/backend/data
