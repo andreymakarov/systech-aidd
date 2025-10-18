@@ -2,7 +2,9 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: devops/Dockerfile.backend
+      args:
+        DOCKER_BUILDKIT: 1
     ports:
       - "8000:8000"
     environment:
@@ -17,10 +19,29 @@ services:
   bot:
     build:
       context: .
-      dockerfile: bot/Dockerfile
+      dockerfile: devops/Dockerfile.bot
+      args:
+        DOCKER_BUILDKIT: 1
     env_file: .env
     environment:
       - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: devops/Dockerfile.frontend
+      args:
+        DOCKER_BUILDKIT: 1
+    ports:
+      - "3000:3000"
+    environment:
+      # For client-side requests from browser
+      - NEXT_PUBLIC_STATS_API_URL=http://localhost:8000/api/v1
+      # For server-side requests from container
+      - STATS_API_URL_INTERNAL=http://backend:8000/api/v1
     depends_on:
       - backend
     restart: unless-stopped

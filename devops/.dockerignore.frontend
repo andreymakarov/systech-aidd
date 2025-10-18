@@ -1,0 +1,47 @@
+# Node artifacts
+node_modules/
+.next/
+out/
+.turbo/
+.vercel/
+*.tsbuildinfo
+
+# Testing
+coverage/
+.nyc_output
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+
+# Documentation
+doc/
+*.md
+
+# Other services
+bot/
+backend/
+
+# Environment
+.env
+.env.*
+
+# Python artifacts
+__pycache__
+*.pyc
+.venv
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+

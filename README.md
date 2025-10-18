@@ -94,9 +94,31 @@ Dashboard будет доступен на http://localhost:3000
 
 ### Docker Compose (рекомендуется для продакшена)
 
+#### Требования
+
+- Docker Desktop 4.0+ (для Windows)
+- Docker Compose v2.0+
+- Минимум 4GB RAM
+
 #### 1. Настройка
 
-Убедитесь, что файл `.env` создан и содержит необходимые токены.
+Создайте файл `.env` в корне проекта и заполните необходимые переменные:
+
+```bash
+# Обязательные параметры
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+OPENROUTER_API_KEY=your_api_key_here
+
+# Backend API (для Docker используется имя сервиса)
+BACKEND_URL=http://backend:8000
+DATABASE_URL=sqlite+aiosqlite:///./backend/data/bot.db
+
+# Необязательные параметры
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=openai/gpt-4o-mini
+ROLE_PROMPT_FILE=prompts/role.txt
+STATS_COLLECTOR=real
+```
 
 #### 2. Запуск всех сервисов
 
@@ -104,11 +126,27 @@ Dashboard будет доступен на http://localhost:3000
 docker-compose up -d --build
 ```
 
-Это запустит:
-- **backend** на порту 8000 (REST API + база данных)
+Это запустит три сервиса:
+- **backend** на порту 8000 (REST API + SQLite база данных)
 - **bot** (Telegram бот, подключается к backend)
+- **frontend** на порту 3000 (Next.js dashboard для статистики)
 
-#### 3. Просмотр логов
+Первый запуск займет несколько минут для сборки образов.
+
+#### 3. Проверка статуса
+
+```bash
+# Проверить статус всех сервисов
+docker-compose ps
+
+# Ожидаемый вывод:
+# NAME                STATE               PORTS
+# backend             running             0.0.0.0:8000->8000/tcp
+# bot                 running
+# frontend            running             0.0.0.0:3000->3000/tcp
+```
+
+#### 4. Просмотр логов
 
 ```bash
 # Все сервисы
@@ -119,13 +157,66 @@ docker-compose logs -f backend
 
 # Только bot
 docker-compose logs -f bot
+
+# Только frontend
+docker-compose logs -f frontend
+
+# Последние 100 строк с временными метками
+docker-compose logs --tail=100 -t
 ```
 
-#### 4. Остановка
+#### 5. Доступ к сервисам
+
+После успешного запуска:
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Frontend Dashboard**: http://localhost:3000
+
+#### 6. Остановка сервисов
 
 ```bash
+# Остановить без удаления контейнеров
+docker-compose stop
+
+# Остановить и удалить контейнеры (база данных сохранится)
 docker-compose down
+
+# Удалить всё включая volumes (ВНИМАНИЕ: удалит базу данных!)
+docker-compose down -v
 ```
+
+#### 7. Обновление и перезапуск
+
+```bash
+# Пересобрать образы после изменений в коде
+docker-compose up -d --build
+
+# Перезапустить конкретный сервис
+docker-compose restart backend
+
+# Пересобрать только один сервис
+docker-compose up -d --build frontend
+```
+
+#### Устранение неполадок
+
+**Порт уже используется:**
+```
+Error: port is already allocated
+```
+Решение: Остановите процесс, использующий порт, или измените порт в `docker-compose.yml`.
+
+**Docker Desktop не запущен (Windows):**
+```
+error connecting to docker daemon
+```
+Решение: Запустите Docker Desktop и дождитесь полной загрузки.
+
+**База данных не сохраняется:**
+Убедитесь, что директория `backend/data` существует и доступна для записи. Volume автоматически сохраняет данные между перезапусками.
+
+**Frontend не подключается к backend:**
+Убедитесь, что переменная `NEXT_PUBLIC_STATS_API_URL` указывает на `http://localhost:8000/api/v1` (не на `http://backend:8000`, так как frontend обращается из браузера).
 
 ## Использование
 

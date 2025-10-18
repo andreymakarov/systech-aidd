@@ -36,11 +36,20 @@ export interface DashboardStats {
   top_users: TopUser[];
 }
 
-export const API_BASE_URL: string =
-  process.env["NEXT_PUBLIC_STATS_API_URL"] ?? "http://localhost:8000/api/v1";
+// Use internal URL for server-side requests, public URL for client-side
+const getApiBaseUrl = (): string => {
+  // Server-side: use internal Docker service name
+  if (typeof window === 'undefined') {
+    return process.env["STATS_API_URL_INTERNAL"] ?? "http://backend:8000/api/v1";
+  }
+  // Client-side: use public URL
+  return process.env["NEXT_PUBLIC_STATS_API_URL"] ?? "http://localhost:8000/api/v1";
+};
+
+export const API_BASE_URL: string = getApiBaseUrl();
 
 export async function getStats(period: Period): Promise<DashboardStats> {
-  const url = `${API_BASE_URL}/stats?period=${period}`;
+  const url = `${getApiBaseUrl()}/stats?period=${period}`;
   const res = await fetch(url, { next: { revalidate: 60 } });
   if (!res.ok) {
     throw new Error(`Failed to load stats (${res.status})`);
